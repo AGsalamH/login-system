@@ -1,4 +1,4 @@
->>>>>> # Simple Login API
+# Simple Login API
   - Express.js 
   - mongoose
   - JWT
