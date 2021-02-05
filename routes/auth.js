@@ -1,28 +1,15 @@
 const router = require('express').Router();
-const authController = require('../controllers/authController');
-const {validate, userValidationRules, loginValidationRules} = require('../middlewares/validation');
-const verifyToken = require('../middlewares/verifyToken');
+const {login, signup} = require('../controllers/auth');
+const validate = require('../middlewares/validation');
+const {userValidationRules, loginValidationRules} = require('../utils/validation');
 
-router.post(
-    '/register',
-    userValidationRules(), 
-    validate,
-    authController.register
-);
+/*
+    - POST /login    
+    - POST /signup    
+*/
 
-
-router.post(
-    '/login',
-    loginValidationRules(), 
-    validate, 
-    authController.login
-);
-
-
-// Only for Testing the Authorization
-router.get('/test',verifyToken, (req, res) => {
-     res.json({msg: 'You are authorized :)'});
-});
+router.post('/signup', userValidationRules(), validate, signup);
+router.post('/login', loginValidationRules(), validate, login);
 
 
 module.exports = router;

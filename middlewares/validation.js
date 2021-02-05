@@ -1,42 +1,20 @@
-const {body, validationResult} = require('express-validator');
+const {validationResult} = require('express-validator');
 
-const userValidationRules = ()=>{
-    return [
-        body('username').isString().isLength({min:2}).isAlphanumeric().notEmpty(),
-        body('email').isEmail().notEmpty(),
-        body('password').isLength({min:6}).notEmpty()
-    ];
-}
-
-
-const loginValidationRules = ()=>{
-    return [
-        body('email').isEmail().notEmpty(),
-        body('password').isLength({min:6}).notEmpty()
-    ];
-}
-
-
-const validate = (req, res, next)=>{
+module.exports = (req, res, next)=>{
     const errors = validationResult(req);
 
-    // on case of no errors occured, continue with the next middleware
-    if (errors.isEmpty()) {
-        return next()
+    if (errors.isEmpty()) { // If no errors occurred.
+        return next();
     }
 
-    // catch Errors!
+    // Here, There are errors! 
+    // Let's Catch 'em!
+    
+    // Formatting the errors a bit in this array
     const extractedErrors = [];
-    errors.array().map(err => extractedErrors.push({ [err.param]: err.msg }))
+    errors.array().map(err => extractedErrors.push({ [err.param]: err.msg }));
   
     return res.status(422).json({
       errors: extractedErrors,
-    })
-}
-
-
-module.exports = {
-    userValidationRules,
-    validate,
-    loginValidationRules,
+    });
 }

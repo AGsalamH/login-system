@@ -1,18 +1,26 @@
 const jwt = require('jsonwebtoken');
+const {isMongooseError, jwtError, _throw} = require('../utils/errorHandling');
 
-module.exports = (req, res, next)=>{
-    const token = req.header('auth-token');
-    if(!token){
-        return res.status(401).json({msg: 'Access-denied'});
-    }
+const User = require('../models/User');
 
+module.exports = async (req, res, next)=>{
+    const token = req.get('Authorization');
     try {
+        if(!token){
+            const error = new jwt.JsonWebTokenError('Access-denied');
+            error.statusCode = 401;
+            throw error;
+        }
         const verified = jwt.verify(token, process.env.TOKEN_SECRET);
+        const user = await User.findById(verified._id);
+        if(!user){
+            const error = new jwt.JsonWebTokenError('User not found!');
+            error.statusCode = 404;
+            throw error;
+        }
         req.user = verified;
-        next();
-
-    } catch (error) {
-        res.status(400).json({err:'invalid Token'});
+        next();        
+    } catch (err) {
+        isMongooseError(err) || jwtError(err) ? next(err) : _throw(err);
     }
-
 }
