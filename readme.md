@@ -1,4 +1,4 @@
-# Simple Login API USING
+# JWT Auth API
 - Express.js 
 - mongoose
 - JsonWebToken
